@@ -68,3 +68,6 @@ Unauthorized client - same as implicit flow
 3rd party apps = IF since server is not trusted with user login credentials
 
 TODO: Only allow 1st party apps' clientid/secrets to exchange username/password for accesstoken.
+
+Problems:
+With ROPCF, anyone can pretend to be the first party app. Any app can pretend to be the official app and send logins directly to server and get jwt back. Third party clients may save username/passwords and jwts to access auth server pretending to be user. We're depending on the user to be smart about not signing in directly with username/password on 3rd party sites.
