@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta name="author" content="John Doe"><meta name="description"><title>Oauth2 for 1st party clients&mdash;Hexo</title><link href="/favicon.png" rel="icon"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom.xml"><link href="http://fonts.googleapis.com/css?family=Open+Sans:400" rel="stylesheet"><link href="http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600" rel="stylesheet" type="text/css"><link rel="stylesheet" href="/stylesheets/app.css"></head><body><header id="page-header"><div id="masthead"><h1 id="site-title"><a href="/">Hexo</a></h1><p id="site-slogan"></p></div></header><section id="content"><article class="post"><h2>Oauth2 for 1st party clients</h2><div class="meta">Mar 15 2015</div><p>A comparison of flows and tradeoffs between <em>implicit flow</em> and <em>resource owner password credentials flow</em>.</p>
+<p>Terms are defined as follows:</p>
+<ul>
+<li>react: browser side (untrusted)</li>
+<li>server: client server accessing the oauth service (untrusted unless first party)</li>
+<li>auth server: our oauth2 server</li>
+</ul>
+<hr>
+<h2 id="Implicit_flow">Implicit flow</h2>
+<ol>
+<li>auth server login</li>
+<li>redirect to react with auth code</li>
+<li>react sends auth code to server</li>
+<li>server sends auth code and clientid/secret to auth server</li>
+<li>server receives access token (jwt) for user</li>
+<li>server send jwt to react</li>
+</ol>
+<h3 id="Authorized_client">Authorized client</h3>
+<ol>
+<li>react sends jwt to server on every request<br>2a. server accepts valid jwt, sends response (done)<br>2b. server rejects expired jwt, sends refresh token and clientid/secret to auth server</li>
+<li>go to previous 5</li>
+</ol>
+<h3 id="Unauthorized_client">Unauthorized client</h3>
+<ol>
+<li>client sends jwt to auth server</li>
+<li>Auth server rejects invalid clientid/secret</li>
+</ol>
+<h3 id="What_sees_what">What sees what</h3>
+<ul>
+<li>react sees auth code, jwt (stores jwt only)</li>
+<li>server sees auth code, clientid/secret, access token</li>
+</ul>
+<h4 id="Results:">Results:</h4>
+<ul>
+<li>jwt can only access this server since clientid/secret not known so can’t access auth server directly, thus doesn’t compromise other apps</li>
+<li>react doesn’t see login credentials and access token</li>
+<li>server doesn’t see login credentials</li>
+</ul>
+<hr>
+<h2 id="Resource_owner_password_credentials_flow">Resource owner password credentials flow</h2>
+<ol>
+<li>react sends login to server</li>
+<li>server sends login + clientid/secret to auth server</li>
+<li>server receives access token (jwt with exp) for user <!-- (maybe unsign at this point and re-sign during future requests to prevent client bypassing server to reach auth-server. maybe moot because sending this access token to auth server requires clientid+secret associated with the access token) --></li>
+<li>server sends jwt (user id etc, possibly same as prev step) to react</li>
+</ol>
+<p>Authorized client - same as implicit flow</p>
+<p>Unauthorized client - same as implicit flow</p>
+<h3 id="What_sees_what-1">What sees what</h3>
+<ul>
+<li>react sees login and jwt (stores jwt only)</li>
+<li>server sees login, clientid/secret, access token</li>
+</ul>
+<h4 id="Results:-1">Results:</h4>
+<ul>
+<li>jwt can only access this server since clientid/secret not known so can’t access auth server directly, thus doesn’t compromise other apps</li>
+<li>react doesn’t see access token</li>
+</ul>
+<hr>
+<p>1st party apps = ROPCF since server is trusted with user login credentials and does not save login credentials in browser<br>3rd party apps = IF since server is not trusted with user login credentials</p>
+<p>TODO: Only allow 1st party apps’ clientid/secrets to exchange username/password for accesstoken.</p>
+</article><nav id="article-pagination"><a href="/2015/03/06/Browser-based-app-with-OAuth2-0/" title="Next article: Browser based app with OAuth2.0" class="next">Next article &rarr;</a></nav></section><footer id="page-footer"><section><nav id="footer-menu"><ul><li><a href="/about">About</a></li><li><a href="/archives">Archive</a></li><li><a href="http://github.com/widatama/hexo-jade-barebone">Source</a></li><li><a href="/atom.xml">Feed</a></li></ul></nav></section></footer></body></html>
