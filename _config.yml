@@ -68,4 +68,4 @@ theme: jade-barebone
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: github.com/aaronz8/blog
+  repo: git@github.com:aaronz8/blog.git
